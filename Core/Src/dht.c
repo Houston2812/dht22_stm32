@@ -7,6 +7,7 @@
 
 #include "micros.h"
 
+int data[40] = { 0 };
 
 void dht22_measure()
 {
@@ -16,46 +17,40 @@ void dht22_measure()
 	HAL_GPIO_WritePin(DHT22_GPIO_Port, DHT22_Pin, GPIO_PIN_RESET);
 	HAL_Delay(2);
 
-	while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) == GPIO_PIN_RESET);
-	delay_micros(40);
+	HAL_GPIO_WritePin(DHT22_GPIO_Port, DHT22_Pin, GPIO_PIN_SET);
+	delay_micros(30);
 
-	while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) ==  GPIO_PIN_SET);
-	delay_micros(80);
+	while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) == GPIO_PIN_SET);
 
-	while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) == GPIO_PIN_RESET);
-	delay_micros(80);
+	while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) ==  GPIO_PIN_RESET);
+
+	while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) == GPIO_PIN_SET);
 
 	//preparation complete
 
-	int data[40] = { 0 };
 
 	for (int i = 0; i < 40; ++i)
 	{
-		int counter = 0;
 
 		while( HAL_GPIO_ReadPin(DHT22_GPIO_Port,DHT22_Pin) != GPIO_PIN_SET)
 		{
 		}
 
-		delay_micros(50);
-
 		while (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) == GPIO_PIN_SET)
 		{
-			counter ++;
-		}
+			delay_micros(30);
+			if (HAL_GPIO_ReadPin(DHT22_GPIO_Port, DHT22_Pin) == GPIO_PIN_SET)
+				data[i] = 1;
 
-		data[i] = counter;
+			else
+				data[i] = 0;
+
+			break;
+
+		}
 
 	}
 
-	int max = data[0];
-	for ( int i = 0; i < 40; ++i)
-	{
-		if (data[i] > max)
-			max = data[i];
-    }
-
-//	for (int i = 0; i < )
 }
 
 
